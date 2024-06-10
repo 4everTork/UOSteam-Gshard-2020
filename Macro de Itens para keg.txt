@@ -1,0 +1,132 @@
+////
+// Macro de Fazer itens keg
+// Ter um bau perto (ou banco) com 2 recipientes
+// Ter um thinker tools e um serrote na backpack
+// Ter um bau com madeira e ferro
+////
+if not @findobject 'BauDRecursos'
+  headmsg 'Selecione o bau com madeira e iron.'
+  promptalias 'BauDRecursos'
+  useobject 'BauDRecursos'
+else
+  useobject 'BauDRecursos'
+endif
+if not @findobject 'BauDBarrelLid'
+  headmsg 'Selecione o bau para o BarrelLid  ( REDONDO ).'
+  promptalias 'BauDBarrelLid'
+  useobject 'BauDBarrelLid'
+else
+  useobject 'BauDBarrelLid'
+endif
+if not @findobject 'BauDBarrelTap'
+  headmsg 'Selecione o bau para o BarrelTap (DE FERRO).'
+  promptalias 'BauDBarrelTap'
+  useobject 'BauDBarrelTap'
+else
+  useobject 'BauDBarrelTap'
+endif
+
+
+
+// Fazendo Board
+if @counttype 0x1bd7 0 'backpack' < 4
+  
+  headmsg 'Fazendo Board'
+  while @counttype 0x1bd7 0 'backpack' < 4
+    // Se acabar a Madeira
+    if @counttype 0x1bdd 0 'backpack' < 4
+      headmsg 'Restockando Madeira'
+      movetype 0x1bdd 'BauDRecursos' 'Backpack' (0 0 0) 0 4 4
+      pause 1000
+    endif
+    if @gumpexists 'any'
+      @replygump 'any' 0
+    endif
+    usetype 0x1034 'backpack'
+    waitforgump 'any' 15000
+    //Gump 1
+    if @gumpexists 'any'
+      @replygump 'any' 1
+      waitforgump 'any' 15000
+      @replygump 'any' 10101
+      waitforgump 'any' 15000
+    endif
+
+    if @injournal 'nao conseguiu'
+      replay
+    endif
+    pause 1000
+  endwhile
+  
+endif
+
+// Fazendo Lid
+if @counttype 0x1db8 0 'backpack' < 1
+  headmsg 'Fazendo Lid'
+  
+  while @counttype 0x1db8 0 'backpack' < 1
+    if @gumpexists 'any'
+      @replygump 'any' 0
+    endif
+    usetype 0x1034 'backpack'
+    waitforgump 'any' 15000
+    //Gump 1
+    if @gumpexists 'any'
+      @replygump 'any' 1
+      waitforgump 'any' 15000
+      @replygump 'any' 10109
+      waitforgump 'any' 15000
+    endif
+
+    if @injournal 'nao conseguiu'
+      replay
+    endif
+    pause 1000
+  endwhile
+  
+endif
+
+// Fazendo Tap
+if @counttype 0x1004 0 'backpack' < 1
+  headmsg 'Fazendo Tap'
+  while @counttype 0x1004 0 'backpack' < 1
+    // Se acabar a Iron
+    if @counttype 0x1bf2 0 'backpack' < 2
+      headmsg 'Restockando Iron'
+      movetype 0x1bf2  'BauDRecursos' 'Backpack' (0 0 0) 0 2 4
+      pause 1000
+    endif
+    if @gumpexists 'any'
+      @replygump 'any' 0
+    endif
+    usetype 0x1eb8 'backpack'
+    waitforgump 'any' 15000
+    //Gump 1
+    if @gumpexists 'any'
+      @replygump 'any' 3
+      waitforgump 'any' 15000
+      @replygump 'any' 10103
+      waitforgump 'any' 15000
+    endif
+
+    if @injournal 'nao conseguiu'
+      replay
+    endif
+    pause 1000
+  endwhile
+  
+endif
+
+// Movendo tudo para os containers
+
+headmsg 'Movendo itens para os baus Madeira'
+while @counttype 0x1004 0 'backpack' >= 1
+  movetype 0x1004 'Backpack' 'BauDBarrelTap' (0 0 0) 0 1
+  pause 1000
+endwhile
+while @counttype 0x1db8 0 'backpack' >= 1
+  movetype 0x1db8 'Backpack' 'BauDBarrelLid' (0 0 0) 0 1
+  pause 1000
+endwhile
+
+//by GHZATOMIC
