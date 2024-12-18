@@ -124,10 +124,6 @@ endif
 pushlist 'Comuns' 1
 ////
 if not @findobject 'ForgeMinoc'
-  cancelautotarget
-  pause 250
-  canceltarget
-  pause 250
   headmsg '*Selecione um forge na mina.*'
   promptalias 'ForgeMinoc'
 endif
@@ -140,13 +136,30 @@ if not @findobject 'bagmining'
 endif
 //
 // Ir até o forge
-// No safe: com +10 raros ou -100 do maximo
+// No safe: com +10 raros ou -150 do maximo
 // Na VIP: com -5 do maximo
 //
-// Mina Minoc
-if x >= 2557 and x <= 2581
-  if y >= 474 and y <= 495
-    if diffweight < 195  or @counttype '0x19b9' '2490' 'backpack' > 10
+if x <= 2562
+  headmsg 'Voltando meio'
+  walk 'North'
+  walk 'North'
+  walk 'North'
+  walk 'North'
+  walk 'North'
+  walk 'North'
+  walk 'East'
+  walk 'East'
+  walk 'East'
+  walk 'East'
+  walk 'East'
+  walk 'North'
+  walk 'North'
+  walk 'North'
+  walk 'North'
+endif
+if x >= 2560 and x <= 2581
+  if y >= 474 and y <= 490
+    if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
       setalias 'Guardar' 'self'
     elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
       setalias 'Guardar' 'self'
@@ -155,7 +168,6 @@ if x >= 2557 and x <= 2581
     endif
   endif
 endif
-// Mina VIP (resto)
 if @findalias 'Guardar' or diffweight < 5
   headmsg 'Guardando minerios'
   pause 500
@@ -181,30 +193,30 @@ if @findalias 'Guardar' or diffweight < 5
   //
   // Guardar raros e smeltar outros
   //
-  msg ".disarm"
-  pause 1250
+  pause 2000
   if @findtype 0x13e3 'any' 'backpack'
-    @useobject 'found'
+    @equipitem 'found' 1
   elseif @findtype 0x13e4 'any' 'backpack'
-    @useobject 'found'
-  elseif @findtype 0xfb4 '2485' 'backpack'
-    @useobject 'found'
-  elseif @findtype 0xfb5 '2485' 'backpack'
-    @useobject 'found'
+    @equipitem 'found' 1
   else
     headmsg 'Nao achou o Martelo'
-    stop
   endif
-  replygump 'any' 0
+  pause 2000
+  //replygump 'any' 0
   msg 'Banker Bank'
-  pause 1000
+  pause 500
   for 0 to 'Ores'
     for 0 to 'Raros'
       while @findtype 'Ores[]' 'Raros[]' 'backpack'
-        @moveitem 'found' 'bagmining'
+        @moveitem 'found' 'bankminerios'
         pause 1000
       endwhile
     endfor
+    if @findtype 0x13e3 'any' 'backpack'
+      @equipitem 'found' 1
+    elseif @findtype 0x13e4 'any' 'backpack'
+      @equipitem 'found' 1
+    endif
     while @findtype 'Ores[]' 'any' 'backpack'
       @useobject 'found'
       pause 1000
@@ -218,7 +230,7 @@ if @findalias 'Guardar' or diffweight < 5
   @clearjournal
   for 0 to 'Pedras'
     if @findtype 'Pedras[]' 'backpack'
-      moveitem! 'found' 'bagmining'
+      @moveitem! 'found' 'bagmining'
       pause 1000
     endif
   endfor
@@ -226,12 +238,8 @@ if @findalias 'Guardar' or diffweight < 5
     pause 1000
   endwhile
   unsetalias 'Guardar'
-  pause 500
-  if @findtype 0xe85 'any' 'backpack'
-    @useobject! 'found'
-  elseif @findtype 0xe86 'any' 'backpack'
-    @useobject! 'found'
-  endif
+  pause 5000
+  msg ".disarm"
 endif
 //
 // Minerar
@@ -245,20 +253,16 @@ for 0 to 2
           @unsetalias 'quit'
           while not @findalias 'quit'
             @cancelautotarget
-            // Fechar porta VIP e Minoc
-            if @findtype 0x839 'any' 'ground' 'any' 2 or @findtype 0x83B 'any' 'ground' 'any' 2
-              @useobject! 'found'
-            elseif @findtype 0x866 'any' 'ground' 'any' 2
-              @useobject! 'found'
-            endif
             if dead 'self'
               stop
             endif
             @autotargettileoffset! 'Pos_X[]' 'Pos_Y[]' 0
             pause 50
-            if @findtype 0xe85 'any' 'self'
+            if @findobject 'righthand'
+              useobject! 'found'
+            elseif @findtype 0xe85 'any' 'backpack'
               @useobject! 'found'
-            elseif @findtype 0xe86 'any' 'self'
+            elseif @findtype 0xe86 'any' 'backpack'
               @useobject! 'found'
             endif
             @clearjournal
@@ -375,24 +379,11 @@ for 0 to 2
               endif
             endwhile
             @clearjournal
-            // Mina Minoc
-            if x >= 2557 and x <= 2581
-              if y >= 474 and y <= 495
-                if diffweight < 195  or @counttype '0x19b9' '2490' 'backpack' > 10
-                  setalias 'Guardar' 'self'
-                  replay
-                elseif @counttype '0x19b9' '2489' 'backpack' > 10  or @counttype '0x19b9' '2492' 'backpack' > 10
-                  setalias 'Guardar' 'self'
-                  replay
-                elseif @counttype '0x19b9' '2493' 'backpack' > 10
-                  setalias 'Guardar' 'self'
-                  replay
-                endif
+            if @findobject 'ForgeMinoc'
+              if diffweight < 150  or @counttype '0x19b9' '2490' 'backpack' > 10
+                replay
               endif
-            endif
-            // Mina VIP (resto)
-            if diffweight < 5
-              setalias 'Guardar' 'self'
+            elseif diffweight < 5
               replay
             endif
           endwhile
